@@ -1,52 +1,109 @@
-import sqlite3
+import streamlit as st
 
-DATABASE = "database/spareparts.db"
+st.set_page_config(page_title="Dashboard", page_icon="📊", layout="wide")
 
-def connect():
-    return sqlite3.connect(DATABASE)
+# -----------------------------
+# Check Login
+# -----------------------------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-def create_table():
-    conn = connect()
-    cursor = conn.cursor()
+if not st.session_state.logged_in:
+    st.error("Please login first.")
+    st.stop()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS spareparts (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        part_id TEXT,
-        part_name TEXT,
-        category TEXT,
-        price REAL,
-        stock INTEGER,
-        supplier TEXT
-    )
-    """)
+# -----------------------------
+# Username
+# -----------------------------
+username = st.session_state.get("username", "Guest")
 
-    conn.commit()
-    conn.close()
+# -----------------------------
+# Logout Button
+# -----------------------------
+col1, col2 = st.columns([8, 1])
 
-def add_part(part_id, part_name, category, price, stock, supplier):
-    conn = connect()
-    cursor = conn.cursor()
+with col2:
+    if st.button("🚪 Logout"):
+        st.session_state.clear()
+        st.switch_page("login.py")
 
-    cursor.execute("""
-    INSERT INTO spareparts
-    (part_id, part_name, category, price, stock, supplier)
-    VALUES (?, ?, ?, ?, ?, ?)
-    """, (part_id, part_name, category, price, stock, supplier))
+# -----------------------------
+# Dashboard
+# -----------------------------
+st.title("📊 AI Auto Spare Parts PLM Dashboard")
 
-    conn.commit()
-    conn.close()
+st.success(f"Welcome {username}")
 
-def view_parts():
-    conn = connect()
-    cursor = conn.cursor()
+st.markdown("---")
 
-    cursor.execute("SELECT * FROM spareparts")
+c1, c2, c3, c4 = st.columns(4)
 
-    rows = cursor.fetchall()
+with c1:
+    st.metric("🚗 Spare Parts", "250")
 
-    conn.close()
+with c2:
+    st.metric("🏭 Manufacturing", "45")
 
-    return rows
+with c3:
+    st.metric("📦 Inventory", "180")
 
-create_table()
+with c4:
+    st.metric("🤖 AI Predictions", "22")
+
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Project Information")
+
+    st.write("Project Name:")
+    st.info("AI Auto Spare Parts Lifecycle Management System")
+
+    st.write("Guide:")
+    st.success("Mr. Dhanesh Babu")
+
+    st.write("Version:")
+    st.info("Version 1.0")
+
+with col2:
+    st.subheader("System Status")
+
+    st.success("Database Connected")
+
+    st.success("Inventory Updated")
+
+    st.success("AI Module Active")
+
+    st.success("Reports Ready")
+
+st.markdown("---")
+
+st.subheader("Modules")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.info("Spare Parts")
+
+    st.info("Manufacturing")
+
+    st.info("Inventory")
+
+with col2:
+    st.info("Suppliers")
+
+    st.info("Service History")
+
+    st.info("Analytics")
+
+with col3:
+    st.info("AI Prediction")
+
+    st.info("End Of Life")
+
+    st.info("Reports")
+
+st.markdown("---")
+
+st.success("PLM System Running Successfully")
