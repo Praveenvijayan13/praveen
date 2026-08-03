@@ -1,67 +1,84 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="AI Auto Spare Parts PLM",
-    page_icon="🚗",
+    page_title="Login",
+    page_icon="🔐",
     layout="centered"
 )
 
-st.title("🚗 AI Auto Spare Parts Lifecycle Management System")
-
-st.markdown("### Login Portal")
-
-# -------------------- USERS --------------------
+# -----------------------------
+# USER DATABASE
+# -----------------------------
 
 users = {
 
     "admin": {
         "password": "admin123",
-        "role": "System Administrator"
+        "name": "System Administrator",
+        "role": "Administrator"
     },
 
     "praveen": {
         "password": "24ME0074",
-        "role": "Project Admin"
+        "name": "Praveen.V (24ME0074)",
+        "role": "Student"
     },
 
     "praveenraj": {
         "password": "24ME0073",
-        "role": "Project Manager"
+        "name": "Praveen Raj.R (24ME0073)",
+        "role": "Student"
     },
 
-    "manufacturing": {
-        "password": "manufacturing123",
-        "role": "Manufacturing Engineer"
+    "suresh": {
+        "password": "drsuresh",
+        "name": "Dr. Suresh",
+        "role": "Project Guide"
     },
 
-    "inventory": {
-        "password": "inventory123",
-        "role": "Inventory Manager"
-    },
-
-    "supplier": {
-        "password": "supplier123",
-        "role": "Supplier Manager"
-    },
-
-    "service": {
-        "password": "service123",
-        "role": "Service Engineer"
-    },
-
-    "analyst": {
-        "password": "analyst123",
-        "role": "AI Analyst"
-    },
-
-    "dr.suresh": {
-        "password": "guide123",
+    "dhanesh": {
+        "password": "dhanesh123",
+        "name": "Mr. Dhanesh Babu",
         "role": "Project Guide"
     }
 
 }
 
-# -------------------- LOGIN --------------------
+# -----------------------------
+# INITIALIZE SESSION
+# -----------------------------
+
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "user_name" not in st.session_state:
+    st.session_state.user_name = ""
+
+if "role" not in st.session_state:
+    st.session_state.role = ""
+
+# -----------------------------
+# IF ALREADY LOGGED IN
+# -----------------------------
+
+if st.session_state.logged_in:
+
+    st.success(f"Welcome {st.session_state.user_name}")
+
+    if st.button("Go to Dashboard"):
+        st.switch_page("app.py")
+
+    st.stop()
+
+# -----------------------------
+# LOGIN PAGE
+# -----------------------------
+
+st.title("🚗 AI Auto Spare Parts Lifecycle Management System")
+
+st.markdown("## 🔐 Login Portal")
+
+st.markdown("---")
 
 username = st.text_input("Username")
 
@@ -76,69 +93,17 @@ if st.button("Login"):
 
         if password == users[username]["password"]:
 
+            st.session_state.logged_in = True
+
+            st.session_state.user_name = users[username]["name"]
+
+            st.session_state.role = users[username]["role"]
+
             st.success("✅ Login Successful")
 
             st.balloons()
 
-            st.write("## Welcome,", username)
-
-            st.info("Role : " + users[username]["role"])
-
-            st.markdown("---")
-
-            st.subheader("Access Permission")
-
-            role = users[username]["role"]
-
-            if role == "System Administrator":
-
-                st.success("✔ Full System Access")
-
-            elif role == "Project Admin":
-
-                st.success("✔ Full Project Access")
-
-            elif role == "Project Manager":
-
-                st.success("✔ Dashboard")
-                st.success("✔ Reports")
-                st.success("✔ Analytics")
-
-            elif role == "Manufacturing Engineer":
-
-                st.success("✔ Manufacturing")
-                st.success("✔ Inventory")
-
-            elif role == "Inventory Manager":
-
-                st.success("✔ Spare Parts")
-                st.success("✔ Inventory")
-
-            elif role == "Supplier Manager":
-
-                st.success("✔ Suppliers")
-
-            elif role == "Service Engineer":
-
-                st.success("✔ Service History")
-
-            elif role == "AI Analyst":
-
-                st.success("✔ AI Prediction")
-                st.success("✔ Analytics")
-                st.success("✔ Reports")
-
-            elif role == "Project Guide":
-
-                st.success("✔ View Dashboard")
-                st.success("✔ View Spare Parts")
-                st.success("✔ View Manufacturing")
-                st.success("✔ View Inventory")
-                st.success("✔ View Suppliers")
-                st.success("✔ View Service History")
-                st.success("✔ View AI Prediction")
-                st.success("✔ View Analytics")
-                st.success("✔ View Reports")
+            st.switch_page("app.py")
 
         else:
 
@@ -147,6 +112,40 @@ if st.button("Login"):
     else:
 
         st.error("❌ Username Not Found")
+
+st.markdown("---")
+
+st.markdown("### Login Accounts")
+
+st.info("""
+Administrator
+Username : admin
+Password : admin123
+""")
+
+st.info("""
+Student
+Username : praveen
+Password : 24ME0074
+""")
+
+st.info("""
+Student
+Username : praveenraj
+Password : 24ME0073
+""")
+
+st.info("""
+Project Guide
+Username : suresh
+Password : drsuresh
+""")
+
+st.info("""
+Project Guide
+Username : dhanesh
+Password : dhanesh123
+""")
 
 st.markdown("---")
 

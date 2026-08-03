@@ -6,86 +6,73 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- Sidebar ----------------
+# --------------------------
+# LOGIN CHECK
+# --------------------------
 
-st.sidebar.title("🚗 AI Auto Spare Parts PLM")
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-st.sidebar.markdown("---")
+if not st.session_state.logged_in:
 
-st.sidebar.subheader("🏫 Institution")
-st.sidebar.write("Chennai Institute of Technology")
+    st.title("🔒 Login Required")
 
-st.sidebar.subheader("📚 Department")
-st.sidebar.write("Mechanical Engineering")
+    st.warning("Please login from the Login page before using the system.")
 
-st.sidebar.subheader("👨‍🎓 Project Team")
+    st.page_link("login.py", label="🔑 Open Login Page")
 
-st.sidebar.write("""
-Praveen.V (24ME0074)
+    st.stop()
 
-Praveen raj.R (24ME0073)
-""")
-
-st.sidebar.subheader("🎓 Academic Year")
-st.sidebar.write("2026 - 2027")
-
-st.sidebar.markdown("---")
-
-st.sidebar.success("Welcome to the PLM System")
-
-# ---------------- Main Page ----------------
+# --------------------------
+# DASHBOARD
+# --------------------------
 
 st.title("🚗 AI Auto Spare Parts Lifecycle Management System")
 
-st.markdown("---")
+st.success(f"Welcome {st.session_state.user_name}")
 
-st.header("📌 Project Objective")
+st.info(f"Role : {st.session_state.role}")
 
-st.write("""
-The AI Auto Spare Parts Lifecycle Management System helps manage
-automobile spare parts from manufacturing to end-of-life using
-Product Lifecycle Management (PLM) concepts.
-""")
-
-st.markdown("---")
-
-st.header("✨ Main Modules")
+st.divider()
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.success("📦 Spare Parts")
-    st.success("🏭 Manufacturing")
-    st.success("📋 Inventory")
-    st.success("🚚 Suppliers")
-    st.success("🔧 Service History")
-    st.success("🤖 AI Prediction")
+    st.metric("Total Spare Parts", 125)
 
 with col2:
-    st.success("📊 Analytics")
-    st.success("♻️ End Of Life")
-    st.success("📄 Reports")
-    st.success("👥 User Management")
-    st.success("ℹ️ About")
+    st.metric("Suppliers", 18)
 
-st.markdown("---")
+st.divider()
 
-st.header("🛠 Technologies Used")
+st.subheader("Main Modules")
 
-st.write("""
-• Python
+st.success("📦 Spare Parts")
 
-• Streamlit
+st.success("🏭 Manufacturing")
 
-• SQLite
+st.success("📋 Inventory")
 
-• Pandas
+st.success("🚚 Suppliers")
 
-• ReportLab
-""")
+st.success("🔧 Service History")
 
-st.markdown("---")
+st.success("🤖 AI Prediction")
 
-st.info("👈 Use the left sidebar to open the project modules.")
+st.success("📊 Analytics")
 
-st.success("✅ AI Auto Spare Parts Lifecycle Management System Ready")
+st.success("♻️ End Of Life")
+
+st.success("📄 Reports")
+
+st.success("👥 User Management")
+
+st.divider()
+
+if st.button("🚪 Logout"):
+
+    st.session_state.logged_in = False
+    st.session_state.user_name = ""
+    st.session_state.role = ""
+
+    st.switch_page("login.py")
