@@ -6,9 +6,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# -----------------------------
-# Login Check
-# -----------------------------
+# ---------------- Login Check ----------------
+
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -17,37 +16,38 @@ if not st.session_state.logged_in:
     st.switch_page("login.py")
     st.stop()
 
-# -----------------------------
-# Sidebar
-# -----------------------------
-st.sidebar.success(f"👋 Welcome\n\n{st.session_state.username}")
+# ---------------- Sidebar ----------------
+
+st.sidebar.title("PLM System")
+
+st.sidebar.success(f"Welcome\n\n{st.session_state.username}")
+
 st.sidebar.info(st.session_state.role)
 
 if st.sidebar.button("🚪 Logout"):
     st.session_state.clear()
     st.switch_page("login.py")
 
-# -----------------------------
-# Dashboard
-# -----------------------------
+# ---------------- Dashboard ----------------
+
 st.title("🚗 AI Auto Spare Parts Lifecycle Management System")
 
-st.success(f"Welcome, {st.session_state.username}")
+st.success(f"Welcome {st.session_state.username}")
 
 st.info(f"Role : {st.session_state.role}")
 
 st.divider()
 
-col1, col2, col3 = st.columns(3)
+c1, c2, c3 = st.columns(3)
 
-with col1:
-    st.metric("📦 Spare Parts", 120)
+with c1:
+    st.metric("📦 Spare Parts", "120")
 
-with col2:
-    st.metric("🏭 Suppliers", 18)
+with c2:
+    st.metric("🏭 Suppliers", "18")
 
-with col3:
-    st.metric("📋 Inventory", 350)
+with c3:
+    st.metric("📋 Inventory", "350")
 
 st.divider()
 
@@ -74,10 +74,15 @@ st.divider()
 st.subheader("Project Information")
 
 st.write("**Project Name:** AI Auto Spare Parts Lifecycle Management System")
+
 st.write("**Guide:** Mr. Dhanesh Babu")
+
 st.write("**Faculty Guide:** Dr. Suresh")
+
 st.write("**Developed By:**")
+
 st.write("- Praveen.V (24ME0074)")
+
 st.write("- Praveen Raj.R (24ME0073)")
 
-st.success("✅ PLM System Running Successfully")
+st.success("✅ Dashboard Loaded Successfully")

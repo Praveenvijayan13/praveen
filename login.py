@@ -118,7 +118,7 @@ if st.button("Login", use_container_width=True):
 
             st.success("Login Successful")
 
-            st.switch_page("app.py")
+            st.switch_page("pages/1_Dashboard.py")
 
         else:
             st.error("Incorrect Password")
