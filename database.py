@@ -52,56 +52,45 @@ with c4:
 
 st.markdown("---")
 
-col1, col2 = st.columns(2)
+left, right = st.columns(2)
 
-with col1:
+with left:
     st.subheader("Project Information")
-
-    st.write("Project Name:")
+    st.write("**Project Name:**")
     st.info("AI Auto Spare Parts Lifecycle Management System")
 
-    st.write("Guide:")
+    st.write("**Guide:**")
     st.success("Mr. Dhanesh Babu")
 
-    st.write("Version:")
+    st.write("**Version:**")
     st.info("Version 1.0")
 
-with col2:
+with right:
     st.subheader("System Status")
-
     st.success("Database Connected")
-
     st.success("Inventory Updated")
-
     st.success("AI Module Active")
-
     st.success("Reports Ready")
 
 st.markdown("---")
 
 st.subheader("Modules")
 
-col1, col2, col3 = st.columns(3)
+m1, m2, m3 = st.columns(3)
 
-with col1:
+with m1:
     st.info("Spare Parts")
-
     st.info("Manufacturing")
-
     st.info("Inventory")
 
-with col2:
+with m2:
     st.info("Suppliers")
-
     st.info("Service History")
-
     st.info("Analytics")
 
-with col3:
+with m3:
     st.info("AI Prediction")
-
     st.info("End Of Life")
-
     st.info("Reports")
 
 st.markdown("---")
