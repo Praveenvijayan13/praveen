@@ -1,9 +1,14 @@
 import streamlit as st
 
-# -----------------------------
-# LOGIN CHECK
-# -----------------------------
+st.set_page_config(
+    page_title="Dashboard",
+    page_icon="📊",
+    layout="wide"
+)
 
+# -----------------------------
+# Login Check
+# -----------------------------
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -13,19 +18,21 @@ if not st.session_state.logged_in:
     st.stop()
 
 # -----------------------------
-# DASHBOARD
+# Sidebar
 # -----------------------------
+st.sidebar.success(f"👋 Welcome\n\n{st.session_state.username}")
+st.sidebar.info(st.session_state.role)
 
-st.set_page_config(
-    page_title="Dashboard",
-    page_icon="📊",
-    layout="wide"
-)
+if st.sidebar.button("🚪 Logout"):
+    st.session_state.clear()
+    st.switch_page("login.py")
 
-st.title("📊 Dashboard")
+# -----------------------------
+# Dashboard
+# -----------------------------
+st.title("🚗 AI Auto Spare Parts Lifecycle Management System")
 
-AI Auto Spare Parts Lifecycle Management System
-Welcome, Praveen.V (24ME0074)
+st.success(f"Welcome, {st.session_state.username}")
 
 st.info(f"Role : {st.session_state.role}")
 
@@ -34,44 +41,43 @@ st.divider()
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("Total Spare Parts", 120)
+    st.metric("📦 Spare Parts", 120)
 
 with col2:
-    st.metric("Suppliers", 18)
+    st.metric("🏭 Suppliers", 18)
 
 with col3:
-    st.metric("Inventory Items", 350)
+    st.metric("📋 Inventory", 350)
 
 st.divider()
 
 st.subheader("Project Modules")
 
-st.success("📦 Spare Parts")
+modules = [
+    "📦 Spare Parts",
+    "🏭 Manufacturing",
+    "📋 Inventory",
+    "🚚 Suppliers",
+    "🔧 Service History",
+    "🤖 AI Prediction",
+    "📊 Analytics",
+    "♻️ End Of Life",
+    "📄 Reports",
+    "👥 User Management"
+]
 
-st.success("🏭 Manufacturing")
-
-st.success("📋 Inventory")
-
-st.success("🚚 Suppliers")
-
-st.success("🔧 Service History")
-
-st.success("🤖 AI Prediction")
-
-st.success("📈 Analytics")
-
-st.success("♻️ End Of Life")
-
-st.success("📄 Reports")
-
-st.success("👥 User Management")
+for module in modules:
+    st.success(module)
 
 st.divider()
 
-if st.button("🚪 Logout"):
+st.subheader("Project Information")
 
-    st.session_state.logged_in = False
-    st.session_state.user_name = ""
-    st.session_state.role = ""
+st.write("**Project Name:** AI Auto Spare Parts Lifecycle Management System")
+st.write("**Guide:** Mr. Dhanesh Babu")
+st.write("**Faculty Guide:** Dr. Suresh")
+st.write("**Developed By:**")
+st.write("- Praveen.V (24ME0074)")
+st.write("- Praveen Raj.R (24ME0073)")
 
-    st.switch_page("login.py")
+st.success("✅ PLM System Running Successfully")
