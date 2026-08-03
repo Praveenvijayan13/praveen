@@ -24,7 +24,8 @@ st.set_page_config(
 
 st.title("📊 Dashboard")
 
-st.success(f"Welcome {st.session_state.user_name}")
+AI Auto Spare Parts Lifecycle Management System
+Welcome, Praveen.V (24ME0074)
 
 st.info(f"Role : {st.session_state.role}")
 
