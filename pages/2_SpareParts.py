@@ -1,154 +1,379 @@
 import streamlit as st
 import sqlite3
 import pandas as pd
-import os
+from pathlib import Path
 
-st.set_page_config(page_title="Spare Parts", page_icon="📦")
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
-st.title("📦 Spare Parts Management")
+st.set_page_config(
+    page_title="Spare Parts Management",
+    page_icon="📦",
+    layout="wide"
+)
 
-# -----------------------------
-# Database Connection
-# -----------------------------
-conn = sqlite3.connect("database/spareparts.db", check_same_thread=False)
+# ============================================================
+# DATABASE
+# ============================================================
+
+DB_PATH = Path("database/spareparts.db")
+
+# Make sure database folder exists
+DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+conn = sqlite3.connect(
+    str(DB_PATH),
+    check_same_thread=False
+)
+
 cursor = conn.cursor()
 
-# Create Table
+# ============================================================
+# CREATE SPARE PARTS TABLE
+# ============================================================
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS spareparts(
+CREATE TABLE IF NOT EXISTS spareparts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    part_id TEXT,
-    part_name TEXT,
-    category TEXT,
-    price REAL,
-    stock INTEGER,
-    supplier TEXT
+    part_id TEXT UNIQUE NOT NULL,
+    part_name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price REAL NOT NULL DEFAULT 0,
+    stock INTEGER NOT NULL DEFAULT 0,
+    supplier TEXT NOT NULL
 )
 """)
 
 conn.commit()
 
-# Create Images Folder
-os.makedirs("images", exist_ok=True)
+# ============================================================
+# TITLE
+# ============================================================
 
-# -----------------------------
-# Add Spare Part
-# -----------------------------
-
-st.subheader("➕ Add New Spare Part")
-
-part_id = st.text_input("Part ID")
-
-part_name = st.text_input("Part Name")
-
-category = st.selectbox(
-    "Category",
-    [
-        "Brake",
-        "Engine",
-        "Transmission",
-        "Suspension",
-        "Electrical",
-        "Body"
-    ]
-)
-
-price = st.number_input(
-    "Price (₹)",
-    min_value=0.0
-)
-
-stock = st.number_input(
-    "Stock",
-    min_value=0
-)
-
-supplier = st.text_input("Supplier")
-
-# Upload Image
-image = st.file_uploader(
-    "Upload Spare Part Image",
-    type=["jpg", "jpeg", "png"]
-)
-
-if st.button("💾 Save Part"):
-
-    cursor.execute("""
-    INSERT INTO spareparts
-    (part_id,part_name,category,price,stock,supplier)
-    VALUES(?,?,?,?,?,?)
-    """,
-    (
-        part_id,
-        part_name,
-        category,
-        price,
-        stock,
-        supplier
-    ))
-
-    conn.commit()
-
-    st.success("✅ Spare Part Saved Successfully!")
-
-    if image is not None:
-
-        image_path = os.path.join("images", image.name)
-
-        with open(image_path, "wb") as f:
-            f.write(image.getbuffer())
-
-        st.success("📷 Image Uploaded Successfully")
-
-        st.image(
-            image,
-            caption=part_name,
-            width=250
-        )
+st.title("📦 Spare Parts Management")
 
 st.divider()
 
-# -----------------------------
-# Search
-# -----------------------------
+# ============================================================
+# ADD NEW SPARE PART
+# ============================================================
+
+st.subheader("➕ Add New Spare Part")
+
+col1, col2 = st.columns(2)
+
+with col1:
+
+    part_id = st.text_input(
+        "Part ID",
+        placeholder="Example: SP001"
+    )
+
+with col2:
+
+    part_name = st.text_input(
+        "Part Name",
+        placeholder="Example: Brake Pad"
+    )
+
+col3, col4 = st.columns(2)
+
+with col3:
+
+    category = st.selectbox(
+        "Category",
+        [
+            "Brake",
+            "Engine",
+            "Transmission",
+            "Suspension",
+            "Wheel",
+            "Electrical",
+            "Cooling",
+            "Exterior",
+            "Lighting",
+            "Steering",
+            "Other"
+        ]
+    )
+
+with col4:
+
+    price = st.number_input(
+        "Price (₹)",
+        min_value=0.0,
+        value=0.0,
+        step=50.0
+    )
+
+col5, col6 = st.columns(2)
+
+with col5:
+
+    stock = st.number_input(
+        "Stock",
+        min_value=0,
+        value=0,
+        step=1
+    )
+
+with col6:
+
+    supplier = st.text_input(
+        "Supplier",
+        placeholder="Example: Bosch"
+    )
+
+# ============================================================
+# SAVE SPARE PART
+# ============================================================
+
+if st.button("💾 Save Part", use_container_width=True):
+
+    part_id_clean = part_id.strip().upper()
+    part_name_clean = part_name.strip()
+    supplier_clean = supplier.strip()
+
+    if part_id_clean == "":
+
+        st.warning("⚠️ Please enter Part ID.")
+
+    elif part_name_clean == "":
+
+        st.warning("⚠️ Please enter Part Name.")
+
+    elif supplier_clean == "":
+
+        st.warning("⚠️ Please enter Supplier.")
+
+    else:
+
+        try:
+
+            # Check duplicate Part ID
+            cursor.execute(
+                """
+                SELECT id
+                FROM spareparts
+                WHERE part_id = ?
+                """,
+                (part_id_clean,)
+            )
+
+            existing = cursor.fetchone()
+
+            if existing:
+
+                st.error(
+                    f"❌ Part ID {part_id_clean} already exists."
+                )
+
+            else:
+
+                # Insert spare part
+                cursor.execute(
+                    """
+                    INSERT INTO spareparts
+                    (
+                        part_id,
+                        part_name,
+                        category,
+                        price,
+                        stock,
+                        supplier
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        part_id_clean,
+                        part_name_clean,
+                        category,
+                        float(price),
+                        int(stock),
+                        supplier_clean
+                    )
+                )
+
+                conn.commit()
+
+                st.success(
+                    f"✅ {part_id_clean} - "
+                    f"{part_name_clean} added successfully!"
+                )
+
+        except sqlite3.Error as e:
+
+            conn.rollback()
+
+            st.error(
+                "❌ Database error while saving spare part."
+            )
+
+            st.code(str(e))
+
+# ============================================================
+# SEARCH
+# ============================================================
+
+st.divider()
 
 st.subheader("🔍 Search Spare Part")
 
-search = st.text_input("Search by Part ID, Name or Supplier")
+search = st.text_input(
+    "Search by Part ID, Name, Category or Supplier",
+    placeholder="Example: SP001 or Brake or Bosch"
+)
 
-if search == "":
+# ============================================================
+# DISPLAY DATA
+# ============================================================
+
+if search.strip() == "":
+
     df = pd.read_sql_query(
-        "SELECT * FROM spareparts",
+        """
+        SELECT
+            id,
+            part_id,
+            part_name,
+            category,
+            price,
+            stock,
+            supplier
+        FROM spareparts
+        ORDER BY id ASC
+        """,
         conn
     )
+
 else:
-    df = pd.read_sql_query(f"""
-    SELECT * FROM spareparts
-    WHERE
-    part_id LIKE '%{search}%'
-    OR part_name LIKE '%{search}%'
-    OR supplier LIKE '%{search}%'
-    """, conn)
+
+    search_value = f"%{search.strip()}%"
+
+    df = pd.read_sql_query(
+        """
+        SELECT
+            id,
+            part_id,
+            part_name,
+            category,
+            price,
+            stock,
+            supplier
+        FROM spareparts
+        WHERE
+            part_id LIKE ?
+            OR part_name LIKE ?
+            OR category LIKE ?
+            OR supplier LIKE ?
+        ORDER BY id ASC
+        """,
+        conn,
+        params=(
+            search_value,
+            search_value,
+            search_value,
+            search_value
+        )
+    )
+
+# ============================================================
+# SPARE PARTS LIST
+# ============================================================
 
 st.subheader("📋 Spare Parts List")
 
-st.dataframe(
-    df,
-    use_container_width=True,
-    hide_index=True
-)
+if len(df) > 0:
 
-# -----------------------------
-# Export CSV
-# -----------------------------
+    st.dataframe(
+        df,
+        use_container_width=True,
+        hide_index=True
+    )
+
+else:
+
+    st.info(
+        "No spare parts found. "
+        "Add your first spare part above."
+    )
+
+# ============================================================
+# SUMMARY
+# ============================================================
+
+st.divider()
+
+st.subheader("📊 Spare Parts Summary")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    total_parts = pd.read_sql_query(
+        """
+        SELECT COUNT(*) AS total
+        FROM spareparts
+        """,
+        conn
+    ).iloc[0]["total"]
+
+    st.metric(
+        "Total Spare Parts",
+        int(total_parts)
+    )
+
+with col2:
+
+    total_stock = pd.read_sql_query(
+        """
+        SELECT COALESCE(SUM(stock), 0) AS total
+        FROM spareparts
+        """,
+        conn
+    ).iloc[0]["total"]
+
+    st.metric(
+        "Total Stock",
+        int(total_stock)
+    )
+
+with col3:
+
+    total_value = pd.read_sql_query(
+        """
+        SELECT COALESCE(SUM(price * stock), 0) AS total
+        FROM spareparts
+        """,
+        conn
+    ).iloc[0]["total"]
+
+    st.metric(
+        "Inventory Value",
+        f"₹{float(total_value):,.2f}"
+    )
+
+# ============================================================
+# EXPORT CSV
+# ============================================================
+
+st.divider()
+
+st.subheader("📥 Export Data")
 
 csv = df.to_csv(index=False).encode("utf-8")
 
 st.download_button(
-    "📥 Download CSV",
-    csv,
-    "SpareParts.csv",
-    "text/csv"
+    label="📥 Download CSV",
+    data=csv,
+    file_name="SpareParts.csv",
+    mime="text/csv",
+    use_container_width=True
 )
+
+# ============================================================
+# CLOSE DATABASE
+# ============================================================
 
 conn.close()
